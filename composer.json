@@ -10,7 +10,11 @@
         "laravel/framework": "^11.0",
         "laravel/jetstream": "^5.0",
         "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.8",
+        "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.9",
+        "meilisearch/meilisearch-php": "^1.7",
+        "spatie/laravel-medialibrary": "^11.4",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {

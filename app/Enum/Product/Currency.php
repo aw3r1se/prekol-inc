@@ -2,7 +2,9 @@
 
 namespace App\Enum\Product;
 
-class Currency
+enum Currency: string
 {
+    case RUB = 'RUB';
 
+    case USD = 'USD';
 }

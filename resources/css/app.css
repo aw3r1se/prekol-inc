@@ -5,3 +5,7 @@
 [x-cloak] {
     display: none;
 }
+
+.el-input input {
+    @apply focus:ring-transparent;
+}

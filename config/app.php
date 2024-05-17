@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'main_currency' => \App\Enum\Product\Currency::RUB,
 ];

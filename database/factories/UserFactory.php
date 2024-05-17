@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -62,7 +62,7 @@ class UserFactory extends Factory
             Team::factory()
                 ->state(fn (array $attributes, User $user) => [
                     'name' => $user->name.'\'s Team',
-                    'user_id' => $user->id,
+                    'user_id' => $user->uuid,
                     'personal_team' => true,
                 ])
                 ->when(is_callable($callback), $callback),
