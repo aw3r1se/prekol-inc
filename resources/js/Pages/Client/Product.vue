@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <!-- DESCRIPTION DESKTOP -->
-                    <div class="max-sm:hidden">
+                    <div class="max-sm:hidden mx-10">
                         {{ product.description }}
                     </div>
                     <div class="flex flex-col align-baseline gap-2">
@@ -57,6 +57,7 @@
                                 justify-between
                                 w-full
                             "
+                            @click="toCart"
                         >
                             <div class="mx-1">
                                 TO CART
@@ -113,6 +114,18 @@ onBeforeMount(async () => {
 
         });
 });
+
+const toCart = async () => {
+    await axios.post(
+        route('api.orders.add-product', product.value.uuid)
+    ).then(() => {
+        console.log('added');
+    }).catch(() => {
+
+    }).finally(() => {
+
+    });
+};
 </script>
 
 <style>

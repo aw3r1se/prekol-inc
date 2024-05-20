@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
+use App\Enum\Order as OrderEnum;
 
 /**
  * @User
@@ -26,6 +27,7 @@ use Laravel\Scout\Searchable;
  * @property Carbon|null $deleted_at
  *
  * @property-read Collection<Order> $orders
+ * @property-read Order|null $current_order
  */
 class User extends Authenticatable
 {
@@ -78,5 +80,12 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function currentOrder(): HasOne
+    {
+        return $this->hasOne(Order::class)
+            ->where('status', OrderEnum\Status::NEW)
+            ->latestOfMany();
     }
 }

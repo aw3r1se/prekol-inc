@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\Cart;
 use App\Http\Controllers\Client\MainPage;
 use App\Http\Controllers\Client\Product;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -19,6 +20,8 @@ Route::middleware([
     ->group(function () {
         Route::get('/', MainPage::class)
             ->name('main');
+        Route::get('cart', Cart::class)
+            ->name('cart');
         Route::prefix('/products')
             ->name('products.')
             ->group(function () {

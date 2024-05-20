@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Resources\API;
 use App\Http\Requests;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
@@ -19,6 +20,8 @@ class ProductController extends Controller
 {
     public function search(): AnonymousResourceCollection
     {
+        dd(Auth::user());
+
         $products = $this->get(Product::class, function ($builder) {
             $builder->orderBy('created_at', 'desc');
         });

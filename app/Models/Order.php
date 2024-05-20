@@ -35,7 +35,8 @@ class Order extends Model implements InteractsWithSearch
     protected $primaryKey = 'uuid';
 
     protected $fillable = [
-
+        'stamp',
+        'status',
     ];
 
     public function customer(): BelongsTo

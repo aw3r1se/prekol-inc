@@ -47,6 +47,9 @@ Route::middleware('api')
             ->group(function () {
                Route::get('/', [API\OrderController::class, 'search'])
                    ->name('search');
+
+               Route::post('/add', [API\OrderController::class, 'addToOrder'])
+                   ->name('add-product');
             });
 
         Route::prefix('users')
