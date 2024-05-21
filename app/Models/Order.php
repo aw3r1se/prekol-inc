@@ -47,7 +47,7 @@ class Order extends Model implements InteractsWithSearch
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'order_product')
-            ->with(['price'])
+            ->with(['currentPrices'])
             ->withPivot([
                 'quantity',
             ]);

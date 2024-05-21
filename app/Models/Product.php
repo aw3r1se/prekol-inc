@@ -54,6 +54,8 @@ class Product extends Model implements InteractsWithSearch, HasMedia
         'currentPrices',
     ];
 
+    public bool $is_in_order = false;
+
     public function image(): MorphOne
     {
         return $this->morphOne(

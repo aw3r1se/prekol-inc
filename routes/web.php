@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Route;
  * @TODO SPLIT IN OTHER ROUTE FILE
  */
 
-Route::middleware([
-
-])->name('client.')
+Route::name('client.')
     ->group(function () {
         Route::get('/', MainPage::class)
             ->name('main');
@@ -30,19 +28,10 @@ Route::middleware([
             });
     });
 
-//Route::get('/', function () {
-////    return Inertia::render('Welcome', [
-////        'canLogin' => Route::has('login'),
-////        'canRegister' => Route::has('register'),
-////        'laravelVersion' => Application::VERSION,
-////        'phpVersion' => PHP_VERSION,
-////    ]);
-//});
-
 Route::middleware([
-//    'auth:sanctum',
-//    config('jetstream.auth_session'),
-//    'verified',
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
 ])->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {

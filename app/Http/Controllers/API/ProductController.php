@@ -2,26 +2,32 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Contracts\InteractsWithCart;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Resources\API;
 use App\Http\Requests;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
+use App\Services\User;
 
 class ProductController extends Controller
 {
+    protected InteractsWithCart $cartService;
+
+    public function __construct(InteractsWithCart $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     public function search(): AnonymousResourceCollection
     {
-        dd(Auth::user());
-
         $products = $this->get(Product::class, function ($builder) {
             $builder->orderBy('created_at', 'desc');
         });
@@ -29,6 +35,9 @@ class ProductController extends Controller
         return API\ProductResource::collection($products);
     }
 
+    /**
+     * @throws Exception
+     */
     public function show(Product $product): API\ProductResource
     {
         $product->load([
@@ -38,6 +47,12 @@ class ProductController extends Controller
                 $builder->orderByDesc('id');
             },
         ]);
+
+        $product->is_in_order = $this->cartService
+            ->isProductInCart(
+                $product,
+                User\Processor::getUuid(),
+            );
 
         return API\ProductResource::make($product);
     }
@@ -105,5 +120,29 @@ class ProductController extends Controller
                 Str::random(24),
                 [ 'disk' => 'temp' ],
             );
+    }
+
+    public function addToCart(Product $product): Response
+    {
+        $this->cartService
+            ->addProductToCart(
+                $product,
+                User\Processor::getUuid(),
+            );
+
+        return response()
+            ->noContent();
+    }
+
+    public function removeFromCart(Product $product): Response
+    {
+        $this->cartService
+            ->removeProductFromCart(
+                $product,
+                User\Processor::getUuid(),
+            );
+
+        return response()
+            ->noContent();
     }
 }

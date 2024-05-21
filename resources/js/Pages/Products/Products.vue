@@ -44,6 +44,14 @@
 
 <script setup>
 import IndexPageLayout from '@/Layouts/IndexPageLayout.vue';
+import { onMounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+onMounted(() => {
+    console.log(page.props);
+});
+
 </script>
 
 <style scoped>

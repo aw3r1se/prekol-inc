@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API;
 
-Route::middleware('api')
+Route::middleware(['api'])
     ->name('api.')
     ->group(function () {
         Route::prefix('media')
@@ -30,9 +30,13 @@ Route::middleware('api')
                     ->name('restore');
                 Route::post('/{product}/upload', [API\ProductController::class, 'upload'])
                     ->name('upload');
-
                 Route::post('/{product}/price', [API\ProductController::class, 'addPrice'])
                     ->name('add-price');
+
+                Route::post('/{product}/add-to-cart', [API\ProductController::class, 'addToCart'])
+                    ->name('add-to-cart');
+                Route::post('/{product}/remove-from-cart', [API\ProductController::class, 'removeFromCart'])
+                    ->name('remove-from-cart');
             });
 
         Route::prefix('currencies')
@@ -47,9 +51,6 @@ Route::middleware('api')
             ->group(function () {
                Route::get('/', [API\OrderController::class, 'search'])
                    ->name('search');
-
-               Route::post('/add', [API\OrderController::class, 'addToOrder'])
-                   ->name('add-product');
             });
 
         Route::prefix('users')

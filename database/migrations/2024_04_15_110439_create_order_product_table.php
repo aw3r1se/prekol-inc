@@ -28,8 +28,6 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->unsignedInteger('quantity');
-
-            $table->timestamps();
         });
     }
 

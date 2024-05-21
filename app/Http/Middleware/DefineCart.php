@@ -3,15 +3,13 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\InteractsWithCart;
-use App\Services\Cart;
 use Closure;
+use App\Services\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
-class StampVisitors
+class DefineCart
 {
     /**
      * Handle an incoming request.
@@ -20,16 +18,13 @@ class StampVisitors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $stamp = $request->cookie('stamp');
-        $request->offsetSet(
-            'stamp',
-                $stamp
-                ?? ($stamp = Str::uuid())
+        app()->singleton(
+            InteractsWithCart::class,
+            Auth::user()
+                ? Cart\Explicit::class
+                : Cart\Implicit::class,
         );
 
-        $stamp = Cookie::make('stamp', $stamp, 10080);
-
-        /** @var Response */
-        return $next($request)->cookie($stamp);
+        return $next($request);
     }
 }

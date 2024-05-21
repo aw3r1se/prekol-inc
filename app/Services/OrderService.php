@@ -72,4 +72,52 @@ class OrderService
         $order->products()
             ->attach($product);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function isProductInOrder(
+        Product $product,
+        ?User $user = null,
+        ?string $stamp = null,
+    ): bool {
+        if (empty($user) && empty($stamp)) {
+            throw new Exception('Can\'t define user');
+        }
+
+        if ($user) {
+            return $this->isProductInRealOrder($product, $user);
+        }
+
+        return $this->isProductInHiddenOrder($product, $stamp);
+    }
+
+    public function isProductInRealOrder(Product $product, User $user): bool
+    {
+        $user->load([
+            'currentOrder',
+            'currentOrder.products',
+        ]);
+
+        return $user->current_order
+            ->products
+            ->contains($product);
+    }
+
+    public function isProductInHiddenOrder(Product $product, string $stamp): bool
+    {
+        /** @var Order $order */
+        $order = Order::query()
+            ->with(['products'])
+            ->where('stamp', $stamp)
+            ->latest()
+            ->first();
+
+        if (empty($order)) {
+            return false;
+        }
+
+        return $order->products
+            ->contains($product);
+    }
 }

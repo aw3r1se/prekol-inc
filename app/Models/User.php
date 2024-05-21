@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Eloquent\Relations\Traits\HasRelationships;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,7 +28,7 @@ use App\Enum\Order as OrderEnum;
  * @property Carbon|null $deleted_at
  *
  * @property-read Collection<Order> $orders
- * @property-read Order|null $current_order
+ * @property-read Order|null $cart
  */
 class User extends Authenticatable
 {
@@ -37,7 +38,8 @@ class User extends Authenticatable
         Notifiable,
         TwoFactorAuthenticatable,
         SoftDeletes,
-        Searchable;
+        Searchable,
+        HasRelationships;
 
     protected $primaryKey = 'uuid';
 
@@ -77,15 +79,15 @@ class User extends Authenticatable
         ];
     }
 
-    public function orders(): HasMany
+    public function testTest(): HasMany
     {
         return $this->hasMany(Order::class);
     }
 
-    public function currentOrder(): HasOne
+    public function cart(): HasOne
     {
         return $this->hasOne(Order::class)
             ->where('status', OrderEnum\Status::NEW)
-            ->latestOfMany();
+            ->ofMany('created_at', 'max');
     }
 }

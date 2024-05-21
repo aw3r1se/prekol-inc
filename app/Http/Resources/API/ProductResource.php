@@ -34,6 +34,7 @@ class ProductResource extends JsonResource
             'media' => MediaResource::collection($this->appendMedia()),
             'tags' => $this->appendTags(),
             'relevantPrice' => ProductPriceResource::make($price),
+            'isInOrder' => $this->is_in_order,
             'prices' => ProductPriceResource::collection($this->currentPrices),
             'createdAt' => $this->created_at->format('Y-m-d h:i:s'),
             'updatedAt' => $this->created_at->format('Y-m-d h:i:s'),

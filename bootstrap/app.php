@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\DefineCart;
 use App\Http\Middleware\StampVisitors;
 use Carbon\CarbonInterface;
 use Illuminate\Console\Scheduling\Schedule;
@@ -9,6 +10,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Support\Arr;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withMiddleware(function (Middleware $middleware) {
         $common = [
-            HandleInertiaRequests::class,
             StampVisitors::class,
         ];
 
@@ -38,9 +39,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: Arr::collapse(
             [
                 [
-                    HandleInertiaRequests::class,
-                    AddLinkHeadersForPreloadedAssets::class,
-                    // Put here
+                    EnsureFrontendRequestsAreStateful::class,
+                    DefineCart::class,
                 ], $common,
             ],
         ));

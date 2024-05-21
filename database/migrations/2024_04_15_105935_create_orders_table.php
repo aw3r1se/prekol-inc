@@ -17,9 +17,14 @@ return new class extends Migration
                 ->primary();
 
             $table->foreignUuid('user_uuid')
+                ->nullable()
                 ->constrained('users', 'uuid')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
+
+            $table->uuid('stamp')
+                ->nullable()
+                ->index();
 
             $table->unsignedTinyInteger('status')
                 ->default(Enum\Order\Status::NEW);

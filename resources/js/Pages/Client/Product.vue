@@ -51,6 +51,26 @@
                             {{ product.relevantPrice.amount }} {{ product.relevantPrice.currency }}
                         </div>
                         <el-button
+                            v-if="product.isInOrder"
+                            v-loading="isCartButtonLoading"
+                            type="success"
+                            class="
+                                flex
+                                justify-between
+                                w-full
+                            "
+                            @click="fromCart"
+                        >
+                            <div class="mx-1">
+                                REMOVE FROM THE CART :(
+                            </div>
+                            <el-icon size="18">
+                                <ShoppingCart />
+                            </el-icon>
+                        </el-button>
+                        <el-button
+                            v-else
+                            v-loading="isCartButtonLoading"
                             type="success"
                             class="
                                 flex
@@ -60,7 +80,7 @@
                             @click="toCart"
                         >
                             <div class="mx-1">
-                                TO CART
+                                ADD TO THE CART
                             </div>
                             <el-icon size="18">
                                 <ShoppingCart />
@@ -101,31 +121,63 @@ import 'vue3-carousel/dist/carousel.css';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import { route } from 'ziggy-js';
 import { ShoppingCart, StarFilled } from '@element-plus/icons-vue';
+import { toast } from 'vue3-toastify';
 
 const product = ref({ });
-onBeforeMount(async () => {
-    const param = route().params.product;
-    await axios.get(route('api.products.show', param))
+const routeParam = ref(null);
+
+const defineProduct = async (productId) => {
+    let data = { };
+    await axios.get(route('api.products.show', productId))
         .then((res) => {
-            product.value = res.data.data;
-        }).catch(() => {
-            // forward to 404
+            data = res.data.data;
+        }).catch((e) => {
+            /** TODO: handle 404 */
         }).finally(() => {
 
         });
+
+    return data;
+};
+
+onBeforeMount(async () => {
+    routeParam.value = route().params.product;
+    product.value = await defineProduct(routeParam.value);
 });
 
+const isCartButtonLoading = ref(false);
 const toCart = async () => {
+    isCartButtonLoading.value = true;
     await axios.post(
-        route('api.orders.add-product', product.value.uuid)
-    ).then(() => {
-        console.log('added');
+        route('api.products.add-to-cart', product.value.uuid)
+    ).then(async () => {
+        product.value.isInCart = await defineProduct(routeParam.value).isInCart;
+        toast('Successfully added to the cart!', {
+            autoClose: 1000,
+        });
+    }).catch((e) => {
+        console.log(e);
+    }).finally(() => {
+        isCartButtonLoading.value = false;
+    });
+};
+
+const fromCart = async () => {
+    isCartButtonLoading.value = true;
+    await axios.post(
+        route('api.products.remove-from-cart', product.value.uuid)
+    ).then(async () => {
+        product.value.isInCart = await defineProduct(routeParam.value).isInCart;
+        toast('Successfully removed from the cart!', {
+            autoClose: 1000,
+        });
     }).catch(() => {
 
     }).finally(() => {
-
+        isCartButtonLoading.value = false;
     });
 };
+
 </script>
 
 <style>
