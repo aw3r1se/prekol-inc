@@ -60,7 +60,7 @@ class Order extends Model implements InteractsWithSearch
         }
 
         return $this->products
-            ->sum(function (Product $product) use ($currency) {
+            ->sum(function (Product $product) use ($currency): mixed {
                 /** @var ProductPrice $price */
                 $price = $product->currentPrices()
                     ->where('currency', $currency)

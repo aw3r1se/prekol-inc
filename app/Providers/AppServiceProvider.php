@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Exceptions\Handler;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,5 +23,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ValidateCsrfToken::except('/api/*');
+
+        $this->app
+            ->singleton(
+                ExceptionHandler::class,
+                Handler::class,
+            );
     }
 }

@@ -29,7 +29,7 @@ class StampVisitors
 
         $stamp = Cookie::make('stamp', $stamp, 10080);
 
-        /** @var Response */
+        /** @var Response $me*/
         return $next($request)->cookie($stamp);
     }
 }

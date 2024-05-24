@@ -9,7 +9,7 @@ class Processor
 {
     public static function getUuid(): string
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         return $user

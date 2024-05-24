@@ -103,7 +103,7 @@ class Product extends Model implements InteractsWithSearch, HasMedia
             'name' => $this->name,
             'description' => $this->description,
             'prices' => $this->currentPrices
-                ->reduce(function (string $acc, ProductPrice $price) {
+                ->reduce(static function (string $acc, ProductPrice $price): string {
                     return $acc . $price->amount . $price->currency . ' ';
                 }, ''),
         ];

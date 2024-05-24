@@ -52,7 +52,7 @@ class Explicit implements InteractsWithCart
      */
     protected function getUser(string $user_uuid): User
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = User::query()
             ->with(['cart'])
             ->find($user_uuid);
@@ -64,14 +64,21 @@ class Explicit implements InteractsWithCart
         return $user;
     }
 
+    /**
+     * @throws CantDefineUser
+     */
     public function isProductInCart(Product $product, string $user_uuid): bool
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = User::query()
             ->with([
                'cart',
                'cart.products',
             ])->find($user_uuid);
+
+        if (empty($user)) {
+            throw new CantDefineUser();
+        }
 
         if (empty($cart = $user->cart)) {
             return false;

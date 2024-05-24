@@ -3,27 +3,59 @@
 namespace App\Services\Cart;
 
 use App\Contracts\InteractsWithCart;
-use App\Exceptions\Cart\CantDefineUser;
+use App\Enum\Order as OrderEnum;
+use App\Models\Order;
 use App\Models\Product;
-use App\Models\User;
 
 class Implicit implements InteractsWithCart
 {
-    /**
-     * @throws CantDefineUser
-     */
     public function addProductToCart(Product $product, string $user_uuid): void
     {
-        $user = User::query()
-            ->find($user_uuid);
+        $order = Order::query()
+            ->where('user_uuid', $user_uuid)
+            ->latest()
+            ->first();
 
-        if (empty($user)) {
-            throw new CantDefineUser();
+        if (empty($order)) {
+            $order = Order::query()->create([
+                'user_uuid' => $user_uuid,
+                'status' => OrderEnum\Status::NEW,
+            ]);
         }
+        /** @var Order $order */
+        $order->products()
+            ->attach($product);
+    }
+
+    public function removeProductFromCart(Product $product, string $user_uuid): void
+    {
+        /** @var Order|null $order */
+        $order = Order::query()
+            ->where('user_uuid', $user_uuid)
+            ->latest()
+            ->first();
+
+        if (empty($order)) {
+            return;
+        }
+
+        $order->products()
+            ->detach($product);
     }
 
     public function isProductInCart(Product $product, string $user_uuid): bool
     {
-        // TODO: Implement isProductInCart() method.
+        /** @var Order|null $cart */
+        $cart = Order::query()
+            ->where('user_uuid', $user_uuid)
+            ->latest()
+            ->first();
+
+        if (empty($cart)) {
+            return false;
+        }
+
+        return $cart->products
+            ->contains($product);
     }
 }
