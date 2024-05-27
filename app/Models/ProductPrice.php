@@ -26,6 +26,10 @@ class ProductPrice extends Model
         'currency',
     ];
 
+    protected $casts = [
+        'amount' => 'float',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

@@ -59,4 +59,15 @@ Route::middleware(['api'])
                 Route::get('/', [API\UserController::class, 'search'])
                     ->name('search');
             });
+
+        Route::prefix('cart')
+            ->name('cart.')
+            ->group(function () {
+                Route::get('/', [API\CartController::class, 'list'])
+                    ->name('list');
+                Route::post('/{product}/add', [API\CartController::class, 'add'])
+                    ->name('add');
+                Route::post('/{product}/sub', [API\CartController::class, 'sub'])
+                    ->name('sub');
+            });
     });

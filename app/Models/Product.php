@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -30,6 +31,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  *
  * @property-read Collection<ProductPrice> $currentPrices
  * @property-read Collection<ProductPrice> $prices
+ * @property-read ProductPrice $price
  * @property-read Collection<ProductTag> $tags
  * @property-read Collection<Media> $media
  * @property-read Media|null $image
@@ -51,7 +53,7 @@ class Product extends Model implements InteractsWithSearch, HasMedia
     ];
 
     protected $with = [
-        'currentPrices',
+        'price',
     ];
 
     public bool $is_in_order = false;
@@ -61,7 +63,7 @@ class Product extends Model implements InteractsWithSearch, HasMedia
         return $this->morphOne(
             $this->getMediaModel(),
             'model',
-        )->latestOfMany();
+        )->oldestOfMany();
     }
 
     public function media(): MorphMany
@@ -70,6 +72,13 @@ class Product extends Model implements InteractsWithSearch, HasMedia
             $this->getMediaModel(),
             'model',
         );
+    }
+
+    public function price(): HasOne
+    {
+        return $this->hasOne(ProductPrice::class)
+            ->where('currency', config('app.main_currency'))
+            ->latestOfMany('created_at');
     }
 
     /**
@@ -86,6 +95,7 @@ class Product extends Model implements InteractsWithSearch, HasMedia
                 GROUP BY product_uuid, currency
             )');
     }
+
     public function prices(): HasMany
     {
         return $this->hasMany(ProductPrice::class);

@@ -22,10 +22,6 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $prices = $this->currentPrices;
-        $price = $prices
-            ->firstWhere('currency', config('app.main_currency')->value);
-
         return [
             'uuid' => $this->uuid,
             'name' => $this->name,
@@ -33,9 +29,8 @@ class ProductResource extends JsonResource
             'image' => MediaResource::make($this->image),
             'media' => MediaResource::collection($this->appendMedia()),
             'tags' => $this->appendTags(),
-            'relevantPrice' => ProductPriceResource::make($price),
+            'price' => $this->price,
             'isInOrder' => $this->is_in_order,
-            'prices' => ProductPriceResource::collection($this->currentPrices),
             'createdAt' => $this->created_at->format('Y-m-d h:i:s'),
             'updatedAt' => $this->created_at->format('Y-m-d h:i:s'),
             'deletedAt' => $this->deleted_at?->format('Y-m-d h:i:s'),
