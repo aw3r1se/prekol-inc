@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Client\Cart;
 use App\Http\Controllers\Client\MainPage;
+use App\Http\Controllers\Client\NotFound;
 use App\Http\Controllers\Client\Product;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\OrderController;
@@ -18,6 +19,8 @@ Route::name('client.')
     ->group(function () {
         Route::get('/', MainPage::class)
             ->name('main');
+        Route::get('/not-found', NotFound::class)
+            ->name('404');
         Route::get('cart', Cart::class)
             ->name('cart');
         Route::prefix('/products')

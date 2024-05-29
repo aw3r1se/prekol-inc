@@ -108,6 +108,7 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 import { route } from 'ziggy-js';
 import { ShoppingCart, StarFilled } from '@element-plus/icons-vue';
 import { toast } from 'vue3-toastify';
+import { router } from '@inertiajs/vue3';
 
 const product = ref({});
 const routeParam = ref(null);
@@ -118,8 +119,10 @@ const defineProduct = async (productId) => {
         .then((res) => {
             data = res.data.data;
         }).catch((e) => {
-            /** TODO: handle 404 */
+            router.visit(route('client.404'));
         });
+
+    console.log(data);
 
     return data;
 };
@@ -134,7 +137,7 @@ const toCart = async () => {
     isCartButtonLoading.value = true;
     await axios.post(route('api.products.add-to-cart', product.value.uuid))
         .then(async () => {
-            product.value.isInCart = (await defineProduct(routeParam.value)).isInCart;
+            product.value.isInOrder = (await defineProduct(routeParam.value)).isInOrder;
             toast('Successfully added to the cart!', { autoClose: 1000 });
         }).catch((e) => {
             console.log(e);
@@ -147,7 +150,7 @@ const fromCart = async () => {
     isCartButtonLoading.value = true;
     await axios.post(route('api.products.remove-from-cart', product.value.uuid))
         .then(async () => {
-            product.value.isInCart = (await defineProduct(routeParam.value)).isInCart;
+            product.value.isInOrder = (await defineProduct(routeParam.value)).isInOrder;
             toast('Successfully removed from the cart!', { autoClose: 1000 });
         }).catch((e) => {
             console.log(e);

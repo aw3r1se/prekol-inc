@@ -58,6 +58,12 @@
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
+                                :active="route().current('client.cart')"
+                                :href="route('client.cart')"
+                            >
+                                Cart
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
                                 v-if="hasUser"
                                 as="button"
                                 @click="logout"

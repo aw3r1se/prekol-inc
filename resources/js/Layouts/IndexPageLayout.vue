@@ -92,7 +92,7 @@ onMounted(async () => {
 });
 
 const searchRoute = computed(() => {
-   return entity.value.searchRoute ?? `api.${entity.value.name}.search`;
+    return entity.value.searchRoute ?? `api.${entity.value.name}.search`;
 });
 
 const createRoute = computed(() => {

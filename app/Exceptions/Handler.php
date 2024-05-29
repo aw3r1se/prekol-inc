@@ -14,7 +14,8 @@ class Handler extends ExceptionHandler
     {
         if ($this->isHttpException($e)) {
             if ($e instanceof NotFoundHttpException) {
-                return Inertia::render('Client/404');
+                return redirect()
+                    ->route('client.404');
             }
         }
 

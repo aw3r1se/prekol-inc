@@ -5,9 +5,12 @@ namespace App\Contracts;
 use App\Models\Order;
 use App\Models\Product;
 use App\Enum\Order as OrderEnum;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class InteractsWithCart
 {
+    abstract public function addProductToCart(Product $product, string $user_uuid): void;
+
     public function list(string $user_uuid): ?Order
     {
         /** @var Order|null */
@@ -16,20 +19,6 @@ abstract class InteractsWithCart
             ->where('user_uuid', $user_uuid)
             ->latest()
             ->first();
-    }
-
-    public function addProductToCart(Product $product, string $user_uuid): void
-    {
-        if (empty($cart = $this->getCart($user_uuid))) {
-            $cart = Order::query()
-                ->create([
-                    'user_uuid' => $user_uuid,
-                    'status' => OrderEnum\Status::NEW,
-                ]);
-        }
-
-        $cart->products()
-            ->attach($product, ['quantity' => 1]);
     }
 
     public function removeProductFromCart(Product $product, string $user_uuid): void
@@ -81,7 +70,10 @@ abstract class InteractsWithCart
     {
         /** @var Order */
         return Order::query()
-            ->where('user_uuid', $user_uuid)
+            ->where(function (Builder $builder) use ($user_uuid) {
+                $builder->where('user_uuid', $user_uuid)
+                    ->orWhere('stamp', $user_uuid);
+            })
             ->where('status', OrderEnum\Status::NEW)
             ->latest()
             ->first();

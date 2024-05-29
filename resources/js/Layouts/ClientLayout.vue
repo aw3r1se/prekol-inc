@@ -1,12 +1,12 @@
 <template>
     <div class="min-h-screen flex flex-col">
-        <div class="flex-grow grid grid-cols-1 xl:grid-cols-12">
-            <Header class="xl:col-span-2" />
-            <main class="col-span-1 xl:col-span-10 m-3 p-3 dark:bg-black-800">
+        <div class="flex-grow flex flex-col xl:flex-row">
+            <Header class="xl:w-1/6" />
+            <main class="flex-grow m-3 p-3 dark:bg-black-800 xl:w-5/6">
                 <slot name="content" />
             </main>
         </div>
-        <Footer class="xl:col-span-12" />
+        <Footer class="w-full" />
     </div>
 </template>
 

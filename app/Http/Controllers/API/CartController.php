@@ -24,7 +24,7 @@ class CartController extends Controller
         $order = $this->service
             ->list(User\Processor::getUuid());
 
-        return CartResource::collection($order->products);
+        return CartResource::collection($order?->products ?? []);
     }
 
     public function add(Product $product): Response
