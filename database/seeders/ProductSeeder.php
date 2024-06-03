@@ -7,6 +7,7 @@ use App\Models\ProductPrice;
 use App\Models\ProductTag;
 use Illuminate\Database\Seeder;
 use App\Enum;
+use Illuminate\Support\Facades\Storage;
 
 class ProductSeeder extends Seeder
 {
@@ -32,6 +33,11 @@ class ProductSeeder extends Seeder
                             ->count(5)
                             ->make(),
                     );
+
+                Storage::disk('public')
+                    ->copy('stub.jpg', $product->uuid);
+                $product->addMediaFromDisk($product->uuid, 'public')
+                    ->toMediaCollection('products', 'products');
             });
     }
 }

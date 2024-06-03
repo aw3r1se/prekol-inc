@@ -67,12 +67,27 @@ services:
         - 'http://localhost:7700/health'
       retries: 3
       timeout: 5s
-  redis:
+  redis-cache:
     image: 'redis:alpine'
     ports:
-      - '${FORWARD_REDIS_PORT:-6379}:6379'
+      - '${FORWARD_REDIS_CACHE_PORT:-6379}:6379'
     volumes:
-      - 'sail-redis:/data'
+      - 'sail-redis-cache:/data'
+    networks:
+      - sail
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      retries: 3
+      timeout: 5s
+  redis-session:
+    image: 'redis:alpine'
+    ports:
+      - '${FORWARD_REDIS_SESSION_PORT:-6380}:6380'
+    volumes:
+      - 'sail-redis-session:/data'
     networks:
       - sail
     healthcheck:
@@ -90,5 +105,7 @@ volumes:
     driver: local
   sail-meilisearch:
     driver: local
-  sail-redis:
+  sail-redis-cache:
+    driver: local
+  sail-redis-session:
     driver: local

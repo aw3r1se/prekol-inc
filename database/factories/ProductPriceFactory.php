@@ -18,11 +18,8 @@ class ProductPriceFactory extends Factory
      */
     public function definition(): array
     {
-        $currencies = Enum\Product\Currency::cases();
-        $count = count($currencies);
-
         return [
-            'currency' => $currencies[rand(0, $count - 1)],
+            'currency' => Enum\Product\Currency::RUB,
             'amount' => fake()->randomFloat(2, max: pow(10, 7)),
         ];
     }

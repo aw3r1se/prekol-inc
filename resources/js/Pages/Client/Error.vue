@@ -8,7 +8,7 @@
 
         <div class="relative z-10 text-center">
             <h1 class="text-9xl font-extrabold mb-4 text-gray-300 animate-pulse">
-                404
+                {{ code }}
             </h1>
             <p class="text-2xl mb-8 text-gray-400">
                 Oops! The page you're looking for doesn't exist.
@@ -41,6 +41,14 @@
 <script setup>
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import { defineProps } from 'vue';
+
+const props = defineProps({
+    code: {
+        type: Number,
+        required: true,
+    }
+});
 
 const goHome = () => {
     router.visit(route('client.main'));

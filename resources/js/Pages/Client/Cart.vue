@@ -17,7 +17,7 @@
                     >
                         <div class="flex items-center w-full md:w-2/3">
                             <img
-                                :src="item.image.url"
+                                :src="item.image?.url"
                                 alt="Product Image"
                                 class="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg shadow-md"
                             >
@@ -26,7 +26,7 @@
                                     {{ item.name }}
                                 </h2>
                                 <p class="text-gray-600 dark:text-gray-400">
-                                    {{ item.price.amount }} {{ item.price.currency }}
+                                    {{ item.price?.amount }} {{ item.price?.currency }}
                                 </p>
                             </div>
                         </div>
@@ -102,6 +102,7 @@ import { onMounted, ref } from 'vue';
 import ClientLayout from '@/Layouts/ClientLayout.vue';
 import { route } from 'ziggy-js';
 import axios from 'axios';
+import { toast } from 'vue3-toastify';
 
 const getCartItems = async () => {
     let data = [];
@@ -121,7 +122,7 @@ const getCartItems = async () => {
 
 const calcTotal = () => {
     return items.value.reduce((acc, item) => {
-        return acc + item.price.amount * item.quantity;
+        return acc + item.price?.amount * item.quantity;
     }, 0).toFixed(2);
 };
 
@@ -135,7 +136,6 @@ onMounted(async () => {
 const currency = 'USD';
 
 const change = async (product, add = true) => {
-    console.log(product);
     const operation = add ? 'add' : 'sub';
     await axios.post(route(`api.cart.${operation}`, { product: product.uuid }))
         .then(async () => {
@@ -150,35 +150,21 @@ const change = async (product, add = true) => {
         });
 };
 
-const incrementQuantity = (item) => {
-    // item.quantity++;
-    // updateTotal();
-};
-
-const decrementQuantity = (item) => {
-    // if (item.quantity > 1) {
-    //     item.quantity--;
-    //     updateTotal();
-    // }
-};
-
-const removeItem = (item) => {
-    //cartItems.value = cartItems.value.filter(cartItem => cartItem.id !== item.id);
-    updateTotal();
-};
-
-const totalAmount = ref(0);
-
-const updateTotal = () => {
-    //totalAmount.value = cartItems.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+const removeItem = async (product) => {
+    await axios.post(route('api.products.remove-from-cart', product.uuid))
+        .then(async () => {
+            items.value = await getCartItems();
+            toast('Successfully removed from the cart!', { autoClose: 1000 });
+        }).catch((e) => {
+            console.log(e);
+        }).finally(() => {
+        });
 };
 
 const checkout = () => {
     // Logic for proceeding to checkout
     console.log('Proceeding to checkout');
 };
-
-updateTotal();
 </script>
 
 <style scoped>

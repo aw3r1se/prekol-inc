@@ -35,7 +35,8 @@ class Order extends Model implements InteractsWithSearch
     protected $primaryKey = 'uuid';
 
     protected $fillable = [
-        'stamp',
+        'user_id',
+        'session_id',
         'status',
     ];
 

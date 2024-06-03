@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\DefineCart;
-use App\Http\Middleware\StampVisitors;
 use Carbon\CarbonInterface;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -24,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withMiddleware(function (Middleware $middleware) {
         $common = [
-            StampVisitors::class,
+            //,
         ];
 
         $middleware->web(append: Arr::collapse(

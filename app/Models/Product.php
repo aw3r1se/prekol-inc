@@ -18,12 +18,15 @@ use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 /**
  * @Product
  * @property string $uuid
  *
  * @property string $name
+ * @property string $slug
  * @property string $description
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -43,6 +46,7 @@ class Product extends Model implements InteractsWithSearch, HasMedia
         SoftDeletes,
         HasFactory,
         Searchable,
+        HasSlug,
         InteractsWithMedia;
 
     protected $primaryKey = 'uuid';
@@ -117,5 +121,19 @@ class Product extends Model implements InteractsWithSearch, HasMedia
                     return $acc . $price->amount . $price->currency . ' ';
                 }, ''),
         ];
+    }
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug')
+            ->usingSeparator('_')
+            ->slugsShouldBeNoLongerThan(50);
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

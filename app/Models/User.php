@@ -15,6 +15,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 use App\Enum\Order as OrderEnum;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @User
@@ -38,6 +39,7 @@ class User extends Authenticatable
         TwoFactorAuthenticatable,
         SoftDeletes,
         Searchable,
+        HasRoles,
         HasRelationships;
 
     protected $primaryKey = 'uuid';

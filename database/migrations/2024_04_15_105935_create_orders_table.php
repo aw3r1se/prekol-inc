@@ -22,7 +22,7 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
-            $table->uuid('stamp')
+            $table->string('session_id')
                 ->nullable()
                 ->index();
 

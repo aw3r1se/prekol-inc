@@ -16,6 +16,9 @@ return new class extends Migration
                 ->primary();
 
             $table->string('name');
+            $table->string('slug')
+                ->unique();
+
             $table->mediumText('description');
 
             $table->timestamps();

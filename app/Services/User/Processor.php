@@ -14,6 +14,7 @@ class Processor
 
         return $user
             ? $user->uuid
-            : request()->offsetGet('stamp');
+            : request()->session()
+                ->getId();
     }
 }

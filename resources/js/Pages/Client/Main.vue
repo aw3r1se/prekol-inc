@@ -1,5 +1,5 @@
 <template>
-    <ClientLayout>
+    <ClientLayout ref="layout">
         <template #content>
             <div class="container mx-auto w-full p-6">
                 <div class="mb-6 align-top">
@@ -27,14 +27,8 @@
                     </div>
                 </div>
                 <div
-                    v-if="isLoading"
-                    class="flex justify-center items-center h-96"
-                >
-                    <span class="text-gray-500">Loading...</span>
-                </div>
-                <div
-                    v-else-if="products.length === 0"
-                    class="flex justify-center items-center h-96"
+                    v-if="!products.length"
+                    class="grid gap-5 justify-center items-center h-96"
                 >
                     <h2 class="text-4xl font-bold text-gray-500">
                         Nothing found
@@ -42,6 +36,7 @@
                 </div>
                 <div
                     v-else
+                    v-loading="layout.isLoading"
                     class="grid gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
                 >
                     <div
@@ -75,12 +70,14 @@
 </template>
 
 <script setup>
+import ClientLayout from '@/Layouts/ClientLayout.vue';
 import axios from 'axios';
 import { debounce } from 'lodash';
-import ClientLayout from '@/Layouts/ClientLayout.vue';
 import { ref, onBeforeMount } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+
+const layout = ref();
 
 const products = ref([]);
 onBeforeMount(async () => {
@@ -89,14 +86,16 @@ onBeforeMount(async () => {
             products.value = res.data.data;
         }).catch(() => {
 
+        }).finally(() => {
+
         });
 });
 
-const isLoading = ref(false);
 const q = ref();
+
 const search = debounce(async (v) => {
     v = v.target.value;
-    isLoading.value = true;
+    layout.value.isLoading.value = true;
     const url = route('api.products.search', { q: v });
 
     await axios.get(url)
@@ -105,12 +104,12 @@ const search = debounce(async (v) => {
         }).catch((e) => {
             console.log(e);
         }).finally(() => {
-            isLoading.value = false;
+            layout.value.isLoading.value = false;
         });
 }, 500);
 
 const follow = (product) => {
-    router.visit(route('client.products.detail', { product: product.uuid }));
+    router.visit(route('client.products.detail', { product: product.slug }));
 };
 
 const getClass = (index) => {
@@ -121,4 +120,5 @@ const getClass = (index) => {
 </script>
 
 <style scoped>
+
 </style>

@@ -1,40 +1,14 @@
 <?php
 
-use App\Http\Controllers\Client\Cart;
-use App\Http\Controllers\Client\MainPage;
-use App\Http\Controllers\Client\NotFound;
-use App\Http\Controllers\Client\Product;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\UserController;
 use Illuminate\Support\Facades\Route;
 
-/**
- * CLIENT INTERFACE
- * @TODO SPLIT IN OTHER ROUTE FILE
- */
-
-Route::name('client.')
-    ->group(function () {
-        Route::get('/', MainPage::class)
-            ->name('main');
-        Route::get('/not-found', NotFound::class)
-            ->name('404');
-        Route::get('cart', Cart::class)
-            ->name('cart');
-        Route::prefix('/products')
-            ->name('products.')
-            ->group(function () {
-                Route::get('/{product}', Product::class)
-                    ->name('detail');
-            });
-    });
-
 Route::middleware([
     'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
+    'can:dashboard.access',
 ])->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
@@ -44,20 +18,34 @@ Route::middleware([
         Route::prefix('/products')
             ->name('products.')
             ->group(function () {
-                Route::get('/', [ProductController::class, 'index'])->name('index');
-                Route::get('/create', [ProductController::class, 'create'])->name('create');
-                Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+                Route::get('/', [ProductController::class, 'index'])
+                    ->name('index')
+                    ->middleware('can:products.list');
+                Route::get('/create', [ProductController::class, 'create'])
+                    ->name('create')
+                    ->middleware('can:products.create');
+                Route::get('/{product}/edit', [ProductController::class, 'edit'])
+                    ->name('edit')
+                    ->middleware('can:products.update');
+
             });
 
         Route::prefix('/orders')
             ->name('orders.')
             ->group(function () {
-                Route::get('/', [OrderController::class, 'index'])->name('index');
+                Route::get('/', [OrderController::class, 'index'])
+                    ->name('index')
+                    ->middleware('can:orders.list');
             });
 
         Route::prefix('/users')
             ->name('users.')
             ->group(function () {
-                Route::get('/', [UserController::class, 'index'])->name('index');
+                Route::get('/', [UserController::class, 'index'])
+                    ->name('index')
+                    ->middleware('can:users.list');
             });
     });
+
+
+include 'client.php';

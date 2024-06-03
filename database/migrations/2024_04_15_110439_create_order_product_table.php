@@ -18,10 +18,6 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->uuid('stamp')
-                ->nullable()
-                ->index();
-
             $table->foreignUuid('product_uuid')
                 ->constrained('products', 'uuid')
                 ->cascadeOnUpdate()

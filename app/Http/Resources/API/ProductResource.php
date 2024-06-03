@@ -7,7 +7,6 @@ use App\Models\ProductTag;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -25,6 +24,7 @@ class ProductResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'name' => $this->name,
+            'slug' => $this->slug,
             'description' => $this->description,
             'image' => MediaResource::make($this->image),
             'media' => MediaResource::collection($this->appendMedia()),

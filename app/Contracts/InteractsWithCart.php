@@ -9,49 +9,41 @@ use Illuminate\Database\Eloquent\Builder;
 
 abstract class InteractsWithCart
 {
-    abstract public function addProductToCart(Product $product, string $user_uuid): void;
+    abstract public function addProductToCart(Product $product, string $user_key): void;
 
-    public function list(string $user_uuid): ?Order
-    {
-        /** @var Order|null */
-        return Order::query()
-            ->with(['products'])
-            ->where('user_uuid', $user_uuid)
-            ->latest()
-            ->first();
-    }
+    abstract public function list(string $user_key): ?Order;
 
-    public function removeProductFromCart(Product $product, string $user_uuid): void
+    public function removeProductFromCart(Product $product, string $user_key): void
     {
-        ($cart = $this->getCart($user_uuid))
+        ($cart = $this->getCart($user_key))
         && $cart->products()
             ->detach($product);
     }
 
-    public function isProductInCart(Product $product, string $user_uuid): bool
+    public function isProductInCart(Product $product, string $user_key): bool
     {
-        return ($cart = $this->getCart($user_uuid))
+        return ($cart = $this->getCart($user_key))
             && $cart->products
                 ->contains($product);
     }
 
-    public function add(Product $product, string $user_uuid): void
+    public function add(Product $product, string $user_key): void
     {
-        $this->change($product, $user_uuid);
+        $this->change($product, $user_key);
     }
 
-    public function sub(Product $product, string $user_uuid): void
+    public function sub(Product $product, string $user_key): void
     {
-        $this->change($product, $user_uuid, false);
+        $this->change($product, $user_key, false);
     }
 
     protected function change(
         Product $product,
-        string $user_uuid,
+        string $user_key,
         bool $add = true,
     ): void {
-        if (empty($cart = $this->getCart($user_uuid))) {
-            $this->addProductToCart($product, $user_uuid);
+        if (empty($cart = $this->getCart($user_key))) {
+            $this->addProductToCart($product, $user_key);
         }
 
         $qt = $cart->products()
@@ -66,16 +58,5 @@ abstract class InteractsWithCart
             ]);
     }
 
-    protected function getCart(string $user_uuid): ?Order
-    {
-        /** @var Order */
-        return Order::query()
-            ->where(function (Builder $builder) use ($user_uuid) {
-                $builder->where('user_uuid', $user_uuid)
-                    ->orWhere('stamp', $user_uuid);
-            })
-            ->where('status', OrderEnum\Status::NEW)
-            ->latest()
-            ->first();
-    }
+    abstract protected function getCart(string $user_key): ?Order;
 }
