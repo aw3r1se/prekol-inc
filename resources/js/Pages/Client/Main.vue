@@ -1,5 +1,5 @@
 <template>
-    <ClientLayout ref="layout">
+    <ClientLayout>
         <template #content>
             <div class="container mx-auto w-full p-6">
                 <div class="mb-6 align-top">
@@ -36,15 +36,16 @@
                 </div>
                 <div
                     v-else
-                    v-loading="layout.isLoading"
+                    v-loading="isLoading"
                     class="grid gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
                 >
-                    <div
+                    <lazy-component
                         v-for="(product, index) in products"
                         :key="product.id"
                         class="relative w-full cursor-pointer group"
                         :class="getClass(index)"
                         @click="follow(product)"
+                        @show="lazyHandler"
                     >
                         <div
                             class="w-full h-full bg-cover bg-center bg-no-repeat rounded-lg transition-transform transform group-hover:scale-105 group-hover:brightness-50 duration-300"
@@ -52,9 +53,7 @@
                                 'background-image': `url(${product.image?.url})`,
                             }"
                         />
-                        <div
-                            class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        >
+                        <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <h2 class="text-xl font-semibold text-white drop-shadow-lg mb-2">
                                 {{ product.name }}
                             </h2>
@@ -62,7 +61,7 @@
                                 {{ product.price?.amount }} {{ product.price?.currency }}
                             </p>
                         </div>
-                    </div>
+                    </lazy-component>
                 </div>
             </div>
         </template>
@@ -71,45 +70,38 @@
 
 <script setup>
 import ClientLayout from '@/Layouts/ClientLayout.vue';
-import axios from 'axios';
-import { debounce } from 'lodash';
 import { ref, onBeforeMount } from 'vue';
 import { route } from 'ziggy-js';
 import { router } from '@inertiajs/vue3';
+import { config } from '/resources/js/utils/config.js';
+import { getProducts, searchProducts } from '@/utils/service.js';
+import { debounce } from 'lodash';
+//import { lazyLoad } from '@/utils/lazy.js';
 
-const layout = ref();
-
-const products = ref([]);
-onBeforeMount(async () => {
-    await axios.get(route('api.products.search'))
-        .then((res) => {
-            products.value = res.data.data;
-        }).catch(() => {
-
-        }).finally(() => {
-
-        });
+const q = ref({
+    s: '',
+    page: 1,
+    per_page: config('fetchLimit'),
 });
 
-const q = ref();
+const products = ref([]);
+const isLoading = ref(false);
+
+onBeforeMount(async () => {
+    products.value = await getProducts(q, isLoading);
+});
 
 const search = debounce(async (v) => {
-    v = v.target.value;
-    layout.value.isLoading.value = true;
-    const url = route('api.products.search', { q: v });
-
-    await axios.get(url)
-        .then((response) => {
-            products.value = response.data.data;
-        }).catch((e) => {
-            console.log(e);
-        }).finally(() => {
-            layout.value.isLoading.value = false;
-        });
+    q.value.query = v.target.value;
+    products.value = await searchProducts(q, isLoading);
 }, 500);
 
 const follow = (product) => {
-    router.visit(route('client.products.detail', { product: product.slug }));
+    router.visit(
+        route(
+            'client.products.detail',
+            { product: product.slug }
+        ));
 };
 
 const getClass = (index) => {
@@ -117,6 +109,25 @@ const getClass = (index) => {
         ? 'lg:col-span-3 md:col-span-3 col-span-2 h-80'
         : 'lg:col-span-2 md:col-span-1 col-span-2 h-80';
 };
+
+// const lazyHandler = async () => {
+//     products.value.push(...await lazyLoad(
+//         async (q, l) => {
+//             return await searchProducts(q, l);
+//         }, isLoading, 0,
+//     ));
+// };
+
+const showedItemsCounter = ref(0);
+const lazyHandler = async () => {
+    showedItemsCounter.value++;
+    const limit = config('fetchLimit')
+    if (showedItemsCounter.value % limit ===  0) {
+        q.value.page = showedItemsCounter.value / limit + 1;
+        products.value.push(...await getProducts(q, isLoading));
+    }
+};
+
 </script>
 
 <style scoped>

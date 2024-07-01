@@ -22,8 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        ValidateCsrfToken::except('/api/*');
-
         $this->app
             ->singleton(
                 ExceptionHandler::class,

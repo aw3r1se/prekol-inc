@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
+import VueLazyLoad  from 'vue-lazyload';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
@@ -18,10 +19,17 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(App, props) })
+        return createApp({
+            render: () => h(App, props)
+        })
             .use(plugin)
             .use(ZiggyVue)
             .use(ElementPlus)
+            .use(VueLazyLoad, {
+                preLoad: 1.3,
+                attempt: 2,
+                lazyComponent: true,
+            })
             .mount(el);
     },
     progress: {

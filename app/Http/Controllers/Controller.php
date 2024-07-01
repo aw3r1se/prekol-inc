@@ -36,7 +36,7 @@ abstract class Controller
         }
 
         if (request()->input('withTrashed')) {
-            $builder->withTrashed();
+            $builder->whereNull('deleted_at');
         }
 
         if ($action) {

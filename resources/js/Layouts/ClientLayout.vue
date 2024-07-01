@@ -16,12 +16,7 @@ import Footer from '@/Components/Client/Footer.vue';
 </script>
 
 <script>
-import { ref, defineExpose } from 'vue';
 
-const isLoading = ref(false);
-defineExpose({
-    isLoading,
-});
 </script>
 
 <style>

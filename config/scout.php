@@ -141,6 +141,9 @@ return [
                     'created_at',
                     'updated_at',
                 ],
+                'filterableAttributes' => [
+                    'deleted_at',
+                ]
             ],
             // 'users' => [
             //     'filterableAttributes'=> ['id', 'name', 'email'],
